@@ -23,8 +23,8 @@ spec:
     - /kaniko/executor 
     args:
     - --no-push
-    - --dockerfile
-    - Dockerfile
+    - --context
+    - .
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
