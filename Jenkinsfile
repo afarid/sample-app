@@ -18,11 +18,9 @@ spec:
   # Use service account that can deploy to all namespaces
   containers:
   - name: kaniko 
-    image: gcr.io/kaniko-project/executor:latest
+    image: golang:1.10
     command: 
-    - /kaniko/executor 
-    args:
-    - --no-push
+    - sleep 1000
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
