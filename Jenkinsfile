@@ -25,6 +25,8 @@ spec:
     - --no-push
     - --context
     - .
+    - --dockerfile
+    - Dockerfile
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
