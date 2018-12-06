@@ -23,15 +23,13 @@ spec:
     - /kaniko/executor 
     args:
     - --no-push
-    - --context
-    - /home/jenkins
-    - --dockerfile
-    - Dockerfile
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
       - name: docker-config
         mountPath: /kaniko/.docker/
+      - name: workspace-volume
+        mountPath: /workspace
   - name: golang
     image: golang:1.10
     command:
