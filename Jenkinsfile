@@ -16,22 +16,12 @@ labels:
   component: ci
 spec:
   # Use service account that can deploy to all namespaces
+  serviceAccountName: cd-jenkins
   containers:
-  - name: kaniko 
-    image: golang:1.10
-    command: 
-    - sleep 1000
-    volumeMounts:
-      - name: aws-secret
-        mountPath: /root/.aws/
-      - name: docker-config
-        mountPath: /kaniko/.docker/
-      - name: workspace-volume
-        mountPath: /workspace
   - name: golang
     image: golang:1.10
     command:
-    - sleep 1000
+    - cat
     tty: true
   - name: gcloud
     image: gcr.io/cloud-builders/gcloud
@@ -43,14 +33,6 @@ spec:
     command:
     - cat
     tty: true
-  restartPolicy: Never
-  volumes:
-    - name: aws-secret
-      secret:
-        secretName: aws-secret
-    - name: docker-config
-      configMap:
-        name: docker-config
 """
 }
   }
@@ -68,8 +50,7 @@ spec:
     }
     stage('Build and push image with Container Builder') {
       steps {
-        container('kaniko') {
-          //sh "PYTHONUNBUFFERED=1 gcloud builds submit -t ${imageTag} ."
+        container('gcloud') {
           sh "sleep 1000"
         }
       }
@@ -80,10 +61,10 @@ spec:
       steps {
         container('kubectl') {
           // Change deployed image in canary to the one we just built
-          //sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/canary/*.yaml")
+          sh("sed -i.bak 's#gcr.io/cloud-solutions-images/gceme:1.0.0#${imageTag}#' ./k8s/canary/*.yaml")
           sh("kubectl --namespace=production apply -f k8s/services/")
           sh("kubectl --namespace=production apply -f k8s/canary/")
-          //sh("echo http://`kubectl --namespace=production get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
+          sh("echo http://`kubectl --namespace=production get service/${feSvcName} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'` > ${feSvcName}")
         } 
       }
     }
