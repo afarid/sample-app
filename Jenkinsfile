@@ -17,6 +17,15 @@ labels:
 spec:
   # Use service account that can deploy to all namespaces
   containers:
+  - name: kaniko 
+    image: gcr.io/kaniko-project/executor:latest
+    command: 
+    - cat
+    volumeMounts:
+      - name: aws-secret
+        mountPath: /root/.aws/
+      - name: docker-config
+        mountPath: /kaniko/.docker/
   - name: golang
     image: golang:1.10
     command:
@@ -32,6 +41,14 @@ spec:
     command:
     - cat
     tty: true
+  restartPolicy: Never
+  volumes:
+    - name: aws-secret
+      secret:
+        secretName: aws-secret
+    - name: docker-config
+      configMap:
+        name: docker-config
 """
 }
   }
@@ -49,9 +66,9 @@ spec:
     }
     stage('Build and push image with Container Builder') {
       steps {
-        container('gcloud') {
+        container('kaniko') {
           //sh "PYTHONUNBUFFERED=1 gcloud builds submit -t ${imageTag} ."
-          sh "sleep 100"
+          sh "/kaniko/executor --no-push"
         }
       }
     }
