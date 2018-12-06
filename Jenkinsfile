@@ -20,7 +20,9 @@ spec:
   - name: kaniko 
     image: gcr.io/kaniko-project/executor:latest
     command: 
-    - cat
+    - /kaniko/executor 
+    args:
+    - --no-push
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
@@ -29,7 +31,7 @@ spec:
   - name: golang
     image: golang:1.10
     command:
-    - cat
+    - sleep 1000
     tty: true
   - name: gcloud
     image: gcr.io/cloud-builders/gcloud
@@ -68,7 +70,7 @@ spec:
       steps {
         container('kaniko') {
           //sh "PYTHONUNBUFFERED=1 gcloud builds submit -t ${imageTag} ."
-          sh "/kaniko/executor --no-push"
+          sh "sleep 1000"
         }
       }
     }
