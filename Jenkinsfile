@@ -24,9 +24,7 @@ spec:
     args:
     - --no-push
     - --context
-    - .
-    - --dockerfile
-    - Dockerfile
+    - /home/jenkins
     volumeMounts:
       - name: aws-secret
         mountPath: /root/.aws/
